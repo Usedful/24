@@ -1,0 +1,128 @@
+Q.1 Write a Java Program to implement Iterator Pattern for Designing Menu like Breakfast, 
+Lunch or Dinner Menu
+
+Ans ->
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+// MenuItem class representing individual items on the menu
+class MenuItem {
+    private String name;
+    private String description;
+
+    public MenuItem(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public String toString() {
+        return name + ": " + description;
+    }
+}
+
+// Menu interface defining methods to create an iterator
+interface Menu {
+    Iterator<MenuItem> createIterator();
+}
+
+// BreakfastMenu class representing a breakfast menu
+class BreakfastMenu implements Menu {
+    private ArrayList<MenuItem> menuItems;
+
+    public BreakfastMenu() {
+        menuItems = new ArrayList<>();
+        addItem("Eggs and Bacon", "Scrambled eggs with crispy bacon");
+        addItem("Pancakes", "Fluffy pancakes with maple syrup");
+        // Add more breakfast items as needed
+    }
+
+    public void addItem(String name, String description) {
+        MenuItem menuItem = new MenuItem(name, description);
+        menuItems.add(menuItem);
+    }
+
+    @Override
+    public Iterator<MenuItem> createIterator() {
+        return menuItems.iterator();
+    }
+}
+
+// LunchMenu class representing a lunch menu
+class LunchMenu implements Menu {
+    private MenuItem[] menuItems;
+    private int numberOfItems = 0;
+
+    public LunchMenu() {
+        menuItems = new MenuItem[5];
+        addItem("Chicken Sandwich", "Grilled chicken with lettuce and mayo");
+        addItem("Caesar Salad", "Romaine lettuce with Caesar dressing");
+        // Add more lunch items as needed
+    }
+
+    public void addItem(String name, String description) {
+        MenuItem menuItem = new MenuItem(name, description);
+        if (numberOfItems < menuItems.length) {
+            menuItems[numberOfItems] = menuItem;
+            numberOfItems++;
+        }
+    }
+
+    @Override
+    public Iterator<MenuItem> createIterator() {
+        return new LunchMenuIterator(menuItems);
+    }
+
+    // Custom iterator for LunchMenu
+    private static class LunchMenuIterator implements Iterator<MenuItem> {
+        private MenuItem[] items;
+        private int position = 0;
+
+        public LunchMenuIterator(MenuItem[] items) {
+            this.items = items;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return position < items.length && items[position] != null;
+        }
+
+        @Override
+        public MenuItem next() {
+            MenuItem menuItem = items[position];
+            position++;
+            return menuItem;
+        }
+    }
+}
+
+// Client code demonstrating the use of Iterator Pattern
+public class MenuClient {
+    public static void printMenu(Menu menu) {
+        Iterator<MenuItem> iterator = menu.createIterator();
+        while (iterator.hasNext()) {
+            MenuItem menuItem = iterator.next();
+            System.out.println(menuItem);
+        }
+    }
+
+    public static void main(String[] args) {
+        BreakfastMenu breakfastMenu = new BreakfastMenu();
+        LunchMenu lunchMenu = new LunchMenu();
+
+        System.out.println("Breakfast Menu:");
+        printMenu(breakfastMenu);
+
+        System.out.println("\nLunch Menu:");
+        printMenu(lunchMenu);
+    }
+}
